@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>cad511e7-8332-4b30-8c60-c99dd9d04c48</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
+  </PropertyGroup>
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <PropertyGroup Label="Configuration">
+    <Id>NEmberJS</Id>
+    <Version>0.0.3</Version>
+    <Title>NEmberJS</Title>
+    <Authors>randomjs</Authors>
+    <Owners>randomjs</Owners>
+    <Summary>ASP NET Web Api and EmberJS Integration. </Summary>
+    <Description>ASP NET Web Api and EmberJS Integration</Description>
+    <ReleaseNotes>
+    </ReleaseNotes>
+    <ProjectUrl>http://github.com/randomjs/nemberjs</ProjectUrl>
+    <LicenseUrl>https://raw.githubusercontent.com/randomjs/NEmberJS/master/LICENSE</LicenseUrl>
+    <Copyright>
+    </Copyright>
+    <Tags>
+    </Tags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NEmberJS\NEmberJS.csproj" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" />
+</Project>
