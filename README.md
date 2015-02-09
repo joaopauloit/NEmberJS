@@ -10,7 +10,7 @@ This Project was forked from [emvelope](https://github.com/jonnii/emvelope). I j
 * Return json as expected in ember-data(RESTAdapter) [json conventions] (http://emberjs.com/guides/models/the-rest-adapter/#toc_json-conventions)
 * Return Enum as int
 * Error class to add custom/domain validations as described in [DS.errors](http://emberjs.com/api/data/classes/DS.Errors.html).
-* Validation Attribute when you use [Required] in your view models.
+* Action Filter Attribute when you use [Required] in your view models.
 
 
 
