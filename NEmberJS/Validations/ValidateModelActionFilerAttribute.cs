@@ -9,23 +9,38 @@ using System.Web.Http.ModelBinding;
 
 namespace NEmberJS.Validations
 {
-    public class ValidateModelActionFilerAttribute : ActionFilterAttribute
+    public class ValidateModelAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
-            
+
             if (actionContext.ModelState.IsValid == false)
             {
                 actionContext.Response = actionContext.Request.CreateResponse((HttpStatusCode)422,
                     ParserModelState(actionContext.ModelState));
             }
+
         }
 
-        public Errors ParserModelState(ModelStateDictionary modelState ){
+        public Errors ParserModelState(ModelStateDictionary modelState)
+        {
+            var error = new Errors();
 
-            var error = new Dictionary<string,object>();
-            modelState.Keys.ToList().ForEach(key=> error.Add(key.Split('.')[1], modelState[key].Errors.Select(modelError=>modelError.ErrorMessage).ToArray()));
-            return new Errors(error);
+            foreach (var item in modelState)
+            {
+                var keySplit = item.Key.Split('.');
+                var keyError = keySplit[keySplit.Length - 1];
+                foreach (var erro in item.Value.Errors)
+                {
+                    string message = erro.ErrorMessage;
+                    //error case, throw overflow application.
+                    if (string.IsNullOrEmpty(erro.ErrorMessage) && erro.Exception != null)
+                        message = erro.Exception.Message;
+                    error.CreateErrorItem(keyError, message);
+                }
+                item.Value.Errors.ToList().ForEach(x => error.CreateErrorItem(keyError, x.ErrorMessage));
+            }
+            return error;
         }
     }
 

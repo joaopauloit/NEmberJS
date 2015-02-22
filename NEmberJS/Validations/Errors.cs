@@ -50,13 +50,13 @@ namespace NEmberJS.Validations
             }
         }
 
-        public void  CreateErrorItem(string key, string value)
+        public void CreateErrorItem(string key, string value)
         {
             if (_properties.ContainsKey(key))
                 AddNewErrorMessageToArray(key, value);
             else
             {
-                _properties.Add(key, new List<String> {value});
+                _properties.Add(key, new List<String> { value });
             }
 
         }
