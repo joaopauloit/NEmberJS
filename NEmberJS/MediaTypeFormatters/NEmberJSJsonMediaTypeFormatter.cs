@@ -33,6 +33,8 @@ namespace NEmberJS.MediaTypeFormatters
             SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
             SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            
+
 
             //SerializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
             SerializerSettings.Converters.Add(new WhiteSpaceTrimStringConverter());
