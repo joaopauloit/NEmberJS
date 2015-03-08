@@ -122,6 +122,10 @@ namespace NEmberJS.Converters
                 }
                 
             }
+            else
+            {
+                dict.Add(envelopePropertyName, content);
+            }
 
 
 
