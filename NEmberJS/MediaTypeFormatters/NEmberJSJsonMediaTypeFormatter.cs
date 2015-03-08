@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -34,8 +35,6 @@ namespace NEmberJS.MediaTypeFormatters
             SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
             SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             
-
-
             //SerializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
             SerializerSettings.Converters.Add(new WhiteSpaceTrimStringConverter());
 
@@ -66,7 +65,7 @@ namespace NEmberJS.MediaTypeFormatters
             var innerValue = shouldEnvelope
                 ? new EnvelopeWrite(value)
                 : value;
-
+            
             return base.WriteToStreamAsync(type, innerValue, writeStream, content, transportContext);
         }
 
@@ -96,7 +95,6 @@ namespace NEmberJS.MediaTypeFormatters
             {
                 return false;
             }
-
             var innerType = GetInnerType(type);
 
             if (innerType == typeof(string))
@@ -123,6 +121,7 @@ namespace NEmberJS.MediaTypeFormatters
             {
                 return false;
             }
+
 
             return true;
         }
@@ -160,6 +159,11 @@ namespace NEmberJS.MediaTypeFormatters
                    && type.IsGenericType && type.Name.Contains("AnonymousType")
                    && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
                    && (type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
+        }
+
+        private static bool IsSideLoad(Type type)
+        {
+            return type.CustomAttributes.Any(x => x.AttributeType == typeof (SideloadAttribute));
         }
     }
 }

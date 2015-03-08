@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NEmberJS.MediaTypeFormatters;
@@ -73,20 +74,53 @@ namespace NEmberJS.Converters
             var envelope = (EnvelopeWrite)value;
 
             var inner = FormatEnvelope(envelope.Value);
-
             serializer.Serialize(writer, inner);
         }
 
-        private object FormatEnvelope(object content)
+        public object FormatEnvelope(object content)
         {
             var envelopePropertyName = _envelopePropertyNameCache.GetOrAdd(
                 content.GetType(),
                 GetEnvelopePropertyName);
+            var dict = new Dictionary<object, object>();
+            
 
-            var dict = new Dictionary<object, object>
+            var sideLoadsProperties = content.GetType()
+                .GetProperties()
+                .Where(x => x.GetCustomAttributes().Any(z => z.GetType() == typeof(SideloadAttribute))).ToList();
+
+            var hasSideLoad = sideLoadsProperties.Any();
+            if (hasSideLoad)
             {
-                { envelopePropertyName, content } 
-            };
+                var returnDict = new Dictionary<object, object>();
+                var withoutSideloadDictionary = new Dictionary<object, object>();
+                var propertiesWithoutSideLoad =
+                    content.GetType()
+                        .GetProperties()
+                        .Where(x => x.GetCustomAttributes().All(z => z.GetType() != typeof (SideloadAttribute))).ToList();
+                propertiesWithoutSideLoad.ForEach(prop => withoutSideloadDictionary.Add(prop.Name, prop.GetValue(content)));
+                dict.Add(envelopePropertyName, withoutSideloadDictionary);
+                foreach (var property in sideLoadsProperties)
+                {
+
+                   var items  = (IEnumerable)property.GetMethod.Invoke(content, null);
+                    List<object> idItems = new List<object>();
+                    foreach (var item in items)
+                    {
+                        var idValueItem = item.GetType().GetProperty("Id").GetValue(item);
+                        idItems.Add(idValueItem);
+                    }
+                    withoutSideloadDictionary.Add(property.Name, idItems);
+                    dict.Add(property.Name, items);
+                 }
+                
+                
+                
+              
+            }
+
+           
+            
 
             var metaProvider = _metaProviders.FirstOrDefault(m => m.Wants(content));
 
@@ -130,5 +164,7 @@ namespace NEmberJS.Converters
                 ? attr.Name
                 : type.Name;
         }
+
+
     }
 }
