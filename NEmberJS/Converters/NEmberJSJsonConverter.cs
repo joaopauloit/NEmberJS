@@ -104,14 +104,14 @@ namespace NEmberJS.Converters
                     var sideLoadProperty = property.GetMethod.Invoke(content, null) ;
 
                     var enumerable = sideLoadProperty as IEnumerable;
-                    if (enumerable != null)
+                    if (sideLoadProperty is IEnumerable)
                     {
                         List<object> idItems =
                             (from object item in enumerable
                                 select item.GetType().GetProperty("Id").GetValue(item)).ToList();
                         withoutSideloadDictionary.Add(property.Name, idItems);
                     }
-                    else
+                    else if(sideLoadProperty != null)
                     {
                        object idItem =
                             sideLoadProperty.GetType().GetProperty("Id").GetValue(sideLoadProperty);
