@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NEmberJS.MediaTypeFormatters;
@@ -47,7 +48,7 @@ namespace NEmberJS.Converters
                 innerEnvelopeType,
                 GetEnvelopePropertyName);
 
-           
+
             var camelCasePropertyName = CamelCase(envelopePropertyName);
 
             var json = JObject.Load(reader);
@@ -83,44 +84,47 @@ namespace NEmberJS.Converters
                 content.GetType(),
                 GetEnvelopePropertyName);
             var dict = new Dictionary<object, object>();
-            
 
-            var sideLoadsProperties = content.GetType()
-                .GetProperties()
-                .Where(x => x.GetCustomAttributes().Any(z => z.GetType() == typeof(SideloadAttribute))).ToList();
+
+            var sideLoadsProperties = GetSideloadProperties(content);
 
             var hasSideLoad = sideLoadsProperties.Any();
             if (hasSideLoad)
             {
-                var returnDict = new Dictionary<object, object>();
                 var withoutSideloadDictionary = new Dictionary<object, object>();
                 var propertiesWithoutSideLoad =
                     content.GetType()
                         .GetProperties()
-                        .Where(x => x.GetCustomAttributes().All(z => z.GetType() != typeof (SideloadAttribute))).ToList();
+                        .Where(x => x.GetCustomAttributes().All(z => z.GetType() != typeof(SideloadAttribute))).ToList();
                 propertiesWithoutSideLoad.ForEach(prop => withoutSideloadDictionary.Add(prop.Name, prop.GetValue(content)));
                 dict.Add(envelopePropertyName, withoutSideloadDictionary);
                 foreach (var property in sideLoadsProperties)
                 {
+                    
+                    var sideLoadProperty = property.GetMethod.Invoke(content, null) ;
 
-                   var items  = (IEnumerable)property.GetMethod.Invoke(content, null);
-                    List<object> idItems = new List<object>();
-                    foreach (var item in items)
+                    var enumerable = sideLoadProperty as IEnumerable;
+                    if (enumerable != null)
                     {
-                        var idValueItem = item.GetType().GetProperty("Id").GetValue(item);
-                        idItems.Add(idValueItem);
+                        List<object> idItems =
+                            (from object item in enumerable
+                                select item.GetType().GetProperty("Id").GetValue(item)).ToList();
+                        withoutSideloadDictionary.Add(property.Name, idItems);
                     }
-                    withoutSideloadDictionary.Add(property.Name, idItems);
-                    dict.Add(property.Name, items);
-                 }
+                    else
+                    {
+                       object idItem =
+                            sideLoadProperty.GetType().GetProperty("Id").GetValue(sideLoadProperty);
+                        withoutSideloadDictionary.Add(property.Name, idItem);
+                    }
+
+                    dict.Add(property.Name, sideLoadProperty);
+                }
                 
-                
-                
-              
             }
 
-           
-            
+
+
 
             var metaProvider = _metaProviders.FirstOrDefault(m => m.Wants(content));
 
@@ -130,6 +134,13 @@ namespace NEmberJS.Converters
             }
 
             return dict;
+        }
+
+        private static List<PropertyInfo> GetSideloadProperties(object content)
+        {
+            return content.GetType()
+                .GetProperties()
+                .Where(x => x.GetCustomAttributes().Any(z => z.GetType() == typeof(SideloadAttribute))).ToList();
         }
 
         public string GetEnvelopePropertyName(Type type)
