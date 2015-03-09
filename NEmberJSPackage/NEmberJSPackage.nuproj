@@ -19,14 +19,13 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>NEmberJS</Id>
-    <Version>0.0.5</Version>
+    <Version>0.0.6</Version>
     <Title>NEmberJS</Title>
     <Authors>randomjs</Authors>
     <Owners>randomjs</Owners>
     <Summary>ASP NET Web Api and EmberJS Integration. </Summary>
     <Description>ASP NET Web Api and EmberJS Integration</Description>
-    <ReleaseNotes>
-    </ReleaseNotes>
+    <ReleaseNotes>Sideload support for hasmany and belongsTo relationship</ReleaseNotes>
     <ProjectUrl>http://github.com/randomjs/nemberjs</ProjectUrl>
     <LicenseUrl>https://raw.githubusercontent.com/randomjs/NEmberJS/master/LICENSE</LicenseUrl>
     <Copyright>

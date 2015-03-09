@@ -109,13 +109,13 @@ namespace NEmberJS.Converters
                         List<object> idItems =
                             (from object item in enumerable
                                 select item.GetType().GetProperty("Id").GetValue(item)).ToList();
-                        withoutSideloadDictionary.Add(property.Name, idItems);
+                        withoutSideloadDictionary.Add(string.Format("{0}_ids",property.Name), idItems);
                     }
                     else if(sideLoadProperty != null)
                     {
                        object idItem =
                             sideLoadProperty.GetType().GetProperty("Id").GetValue(sideLoadProperty);
-                        withoutSideloadDictionary.Add(property.Name, idItem);
+                       withoutSideloadDictionary.Add(string.Format("{0}_id", property.Name), idItem);
                     }
 
                     dict.Add(property.Name, sideLoadProperty);
